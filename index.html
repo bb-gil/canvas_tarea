@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Guía Interactiva de Canvas en HTML y JS</title>
+  <style>
+    /* Fondo con gradiente animado */
+    body {
+      margin: 0;
+      font-family: "Poppins", sans-serif;
+      text-align: center;
+      color: #fff;
+      background: linear-gradient(270deg, #ff4b2b, #ff416c, #0072ff, #00c6ff);
+      background-size: 800% 800%;
+      animation: fondo 12s ease infinite;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    @keyframes fondo {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px #fff, 0 0 20px #00c6ff;
+    }
+
+    h2 {
+      color: #ffea00;
+      text-shadow: 0 0 5px #fff, 0 0 10px #ffea00;
+      margin-top: 25px;
+    }
+
+    p {
+      font-size: 1.1em;
+      margin-bottom: 15px;
+    }
+
+    /* Botones con efecto neón */
+    button {
+      background: transparent;
+      border: 2px solid #fff;
+      color: #fff;
+      padding: 10px 20px;
+      margin: 8px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px #fff, 0 0 20px #00c6ff;
+    }
+
+    button:hover {
+      color: #111;
+      background: #fff;
+      box-shadow: 0 0 20px #ffea00, 0 0 40px #ffea00;
+      transform: scale(1.05);
+    }
+
+    /* Canvas con borde animado */
+    canvas {
+      background: #111;
+      display: block;
+      margin: 30px auto;
+      border: 3px solid;
+      border-image: linear-gradient(45deg, #ff416c, #00c6ff, #ffea00) 1;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      animation: borde 6s linear infinite;
+    }
+
+    @keyframes borde {
+      0% {border-image: linear-gradient(45deg, #ff416c, #00c6ff, #ffea00) 1;}
+      50% {border-image: linear-gradient(45deg, #00c6ff, #ffea00, #ff416c) 1;}
+      100% {border-image: linear-gradient(45deg, #ff416c, #00c6ff, #ffea00) 1;}
+    }
+  </style>
+</head>
+<body>
+
+<h1>✨ Guía Interactiva: HTML Canvas y JavaScript ✨</h1>
+<p>Haz clic en los botones para ver los efectos visuales y animaciones.</p>
+
+<canvas id="miCanvas" width="500" height="300"></canvas>
+
+<div>
+  <h2>🎨 Módulo 1: Fundamentos y Dibujo</h2>
+  <button onclick="dibujarRectangulos()">Rectángulos</button>
+  <button onclick="dibujarTriangulo()">Triángulo</button>
+  <button onclick="dibujarCirculo()">Círculo</button>
+</div>
+
+<div>
+  <h2>🚀 Módulo 2: Animaciones</h2>
+  <button onclick="animacionLineal()">Movimiento Lineal</button>
+  <button onclick="animacionDiagonal()">Rebote Diagonal</button>
+</div>
+
+<div>
+  <h2>🎮 Módulo 3: Juego 2D (Colisiones)</h2>
+  <button onclick="juegoColisiones()">Colisiones</button>
+</div>
+
+<script>
+const canvas = document.getElementById("miCanvas");
+const ctx = canvas.getContext("2d");
+let animacion;
+
+// -------- MODULO 1 ---------
+function limpiarCanvas() {
+  cancelAnimationFrame(animacion);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function dibujarRectangulos() {
+  limpiarCanvas();
+  ctx.fillStyle = "rgba(0, 255, 255, 0.7)";
+  ctx.fillRect(25, 25, 100, 100);
+  ctx.clearRect(45, 45, 60, 60);
+  ctx.strokeStyle = "#ffea00";
+  ctx.lineWidth = 3;
+  ctx.strokeRect(50, 50, 50, 50);
+}
+
+function dibujarTriangulo() {
+  limpiarCanvas();
+  ctx.beginPath();
+  ctx.moveTo(125, 125);
+  ctx.lineTo(125, 45);
+  ctx.lineTo(45, 125);
+  ctx.closePath();
+  ctx.strokeStyle = "#ff66cc";
+  ctx.lineWidth = 3;
+  ctx.stroke();
+}
+
+function dibujarCirculo() {
+  limpiarCanvas();
+  ctx.beginPath();
+  ctx.arc(150, 150, 50, 0, Math.PI * 2, true);
+  ctx.moveTo(185, 150);
+  ctx.arc(150, 150, 35, 0, Math.PI, false);
+  ctx.moveTo(135, 135);
+  ctx.arc(130, 135, 5, 0, Math.PI * 2, true);
+  ctx.moveTo(175, 135);
+  ctx.arc(170, 135, 5, 0, Math.PI * 2, true);
+  ctx.strokeStyle = "#00ffff";
+  ctx.lineWidth = 2;
+  ctx.stroke();
+}
+
+// -------- MODULO 2 ---------
+let x = 0;
+function animacionLineal() {
+  limpiarCanvas();
+  x = 0;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = `hsl(${x}, 100%, 50%)`;
+    ctx.fillRect(x, 100, 40, 40);
+    x += 4;
+    if (x > canvas.width) x = 0;
+    animacion = requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+let xd = 50, yd = 50, speedX = 3, speedY = 2;
+function animacionDiagonal() {
+  limpiarCanvas();
+  xd = 50; yd = 50; speedX = 3; speedY = 2;
+  let color = 0;
+  function animateDiagonal() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = `hsl(${color}, 100%, 60%)`;
+    ctx.fillRect(xd, yd, 40, 40);
+    xd += speedX;
+    yd += speedY;
+    color += 3;
+    if (color > 360) color = 0;
+    if (xd + 40 > canvas.width || xd < 0) speedX = -speedX;
+    if (yd + 40 > canvas.height || yd < 0) speedY = -speedY;
+    animacion = requestAnimationFrame(animateDiagonal);
+  }
+  animateDiagonal();
+}
+
+// -------- MODULO 3 ---------
+function juegoColisiones() {
+  limpiarCanvas();
+  let ballX = canvas.width / 2;
+  let ballY = canvas.height - 30;
+  let dx = 3;
+  let dy = -3;
+  const ballRadius = 8;
+
+  const brickRowCount = 3;
+  const brickColumnCount = 5;
+  const brickWidth = 75;
+  const brickHeight = 20;
+  const brickPadding = 10;
+  const brickOffsetTop = 30;
+  const brickOffsetLeft = 30;
+
+  let hue = 0;
+  let bricks = [];
+  for (let c = 0; c < brickColumnCount; c++) {
+    bricks[c] = [];
+    for (let r = 0; r < brickRowCount; r++) {
+      bricks[c][r] = { x: 0, y: 0, status: 1 };
+    }
+  }
+
+  function drawBall() {
+    ctx.beginPath();
+    ctx.arc(ballX, ballY, ballRadius, 0, Math.PI * 2);
+    ctx.fillStyle = `hsl(${hue}, 100%, 50%)`;
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  function drawBricks() {
+    for (let c = 0; c < brickColumnCount; c++) {
+      for (let r = 0; r < brickRowCount; r++) {
+        if (bricks[c][r].status == 1) {
+          let brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
+          let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+          bricks[c][r].x = brickX;
+          bricks[c][r].y = brickY;
+          ctx.beginPath();
+          ctx.rect(brickX, brickY, brickWidth, brickHeight);
+          ctx.fillStyle = `hsl(${(hue + r * 30 + c * 40) % 360}, 100%, 60%)`;
+          ctx.fill();
+          ctx.closePath();
+        }
+      }
+    }
+  }
+
+  function collisionDetection() {
+    for (let c = 0; c < brickColumnCount; c++) {
+      for (let r = 0; r < brickRowCount; r++) {
+        let b = bricks[c][r];
+        if (b.status == 1) {
+          if (ballX > b.x && ballX < b.x + brickWidth &&
+              ballY > b.y && ballY < b.y + brickHeight) {
+            dy = -dy;
+            b.status = 0;
+          }
+        }
+      }
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    hue += 2;
+    drawBricks();
+    drawBall();
+    collisionDetection();
+    if (ballX + dx > canvas.width - ballRadius || ballX + dx < ballRadius) dx = -dx;
+    if (ballY + dy < ballRadius || ballY + dy > canvas.height - ballRadius) dy = -dy;
+    ballX += dx;
+    ballY += dy;
+    animacion = requestAnimationFrame(draw);
+  }
+  draw();
+}
+</script>
+
+</body>
+</html>
